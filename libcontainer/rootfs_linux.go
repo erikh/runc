@@ -152,7 +152,7 @@ func mountCmd(cmd configs.Command) error {
 
 func mountToRootfs(m *configs.Mount, rootfs, mountLabel string) error {
 	var (
-		dest = m.Destination
+		dest = strings.TrimSpace(m.Destination)
 	)
 	if !strings.HasPrefix(dest, rootfs) {
 		dest = filepath.Join(rootfs, dest)
@@ -475,7 +475,7 @@ func bindMountDeviceNode(dest string, node *configs.Device) error {
 
 // Creates the device node in the rootfs of the container.
 func createDeviceNode(rootfs string, node *configs.Device, bind bool) error {
-	dest := filepath.Join(rootfs, node.Path)
+	dest := filepath.Join(strings.TrimSpace(rootfs), strings.TrimSpace(node.Path))
 	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
 		return err
 	}
@@ -682,6 +682,8 @@ func msMoveRoot(rootfs string) error {
 
 // createIfNotExists creates a file or a directory only if it does not already exist.
 func createIfNotExists(path string, isDir bool) error {
+	path = strings.TrimSpace(path)
+
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
 			if isDir {
